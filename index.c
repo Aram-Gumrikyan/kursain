@@ -108,7 +108,7 @@ void putArr(int height, int width, int (*arr)[width])
         for (int j = 0; j < width; j++)
         {
             printf("%3d", *(*(arr + i) + j));
-            Sleep(3000);
+            sleep(500);
         }
 
         pos.Y += 1;
