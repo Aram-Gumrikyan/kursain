@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <windows.h>
 
-void sleep(int sleepTime);
 void generateMatrix(int height, int width, int (*arr)[width]);
 void upwardMovement(int height, int width, int (*arr)[width]);
 int getNumberFromUser(char name[]);
@@ -14,7 +13,6 @@ void putArr(int height, int width, int (*arr)[width]);
 
 int main()
 {
-
     int width = getNumberFromUser("width");
     int height = getNumberFromUser("height");
 
@@ -29,17 +27,6 @@ int main()
     }
 
     return 0;
-}
-
-void sleep(int sleepTime)
-{
-    clock_t start = clock();
-    clock_t now;
-
-    do
-    {
-        now = clock();
-    } while (now - start != sleepTime);
 }
 
 int getNumberFromUser(char name[])
@@ -94,21 +81,34 @@ void copyArray(int width, int *dest, int *root)
 
 void putArr(int height, int width, int (*arr)[width])
 {
-
     COORD pos;
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
 
     pos.Y = 8;
     pos.X = 30;
 
     for (int i = 0; i < height; i++)
     {
-        SetConsoleCursorPosition(hStdout, pos);
+        SetConsoleCursorPosition(hConsole, pos);
 
         for (int j = 0; j < width; j++)
         {
             printf("%3d", *(*(arr + i) + j));
-            Sleep(3000);
+
+            for (int k = 0; k < 255; k++)
+            {
+                if (GetAsyncKeyState(k))
+                {
+                    if (i != 0)
+                    {
+                        ExitProcess(0);
+                    }
+                }
+            }
+
+            Sleep(500);
         }
 
         pos.Y += 1;
