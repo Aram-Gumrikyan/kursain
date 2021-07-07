@@ -105,12 +105,9 @@ void putArr(int height, int width, int (*arr)[width], int delay)
 
             for (int k = 0; k < 127; k++)
             {
-                if (GetAsyncKeyState(k))
+                if (GetAsyncKeyState(k) && i != 0)
                 {
-                    if (i != 0)
-                    {
-                        ExitProcess(0);
-                    }
+                    ExitProcess(0);
                 }
             }
 
