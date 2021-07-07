@@ -9,7 +9,7 @@ void generateMatrix(int height, int width, int (*arr)[width]);
 void upwardMovement(int height, int width, int (*arr)[width]);
 int getNumberFromUser(char name[]);
 void copyArray(int width, int *dest, int *root);
-void putArr(int height, int width, int (*arr)[width]);
+void putArr(int height, int width, int (*arr)[width], int delay);
 
 int main()
 {
@@ -19,11 +19,13 @@ int main()
     int arr[height][width];
 
     generateMatrix(height, width, arr);
+    putArr(height, width, arr, 0);
+    Sleep(3000);
 
     while (true)
     {
-        putArr(height, width, arr);
         upwardMovement(height, width, arr);
+        putArr(height, width, arr, 500);
     }
 
     return 0;
@@ -52,7 +54,6 @@ void generateMatrix(int height, int width, int (*arr)[width])
     {
         for (int j = 0; j < width; j++)
         {
-            // arr[i][j] = rand() % 99;
             *(*(arr + i) + j) = rand() % 99;
         }
     }
@@ -79,7 +80,7 @@ void copyArray(int width, int *dest, int *root)
     }
 }
 
-void putArr(int height, int width, int (*arr)[width])
+void putArr(int height, int width, int (*arr)[width], int delay)
 {
     COORD pos;
 
@@ -97,7 +98,12 @@ void putArr(int height, int width, int (*arr)[width])
         {
             printf("%3d", *(*(arr + i) + j));
 
-            for (int k = 0; k < 255; k++)
+            if (!delay)
+            {
+                continue;
+            }
+
+            for (int k = 0; k < 127; k++)
             {
                 if (GetAsyncKeyState(k))
                 {
@@ -107,11 +113,11 @@ void putArr(int height, int width, int (*arr)[width])
                     }
                 }
             }
-
-            Sleep(500);
         }
 
         pos.Y += 1;
+
+        Sleep(delay);
     }
 }
 
