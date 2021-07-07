@@ -113,11 +113,13 @@ void putArr(int height, int width, int (*arr)[width], int delay)
                     }
                 }
             }
+
+            // Sleep(delay); //animation type 1
         }
 
         pos.Y += 1;
 
-        Sleep(delay);
+        Sleep(delay); //animation type 2
     }
 }
 
