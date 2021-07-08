@@ -103,7 +103,7 @@ void putArr(int height, int width, int (*arr)[width], int delay)
                 continue;
             }
 
-            for (int k = 0; k < 127; k++)
+            for (int k = 1; k < 128; k++)
             {
                 if (GetAsyncKeyState(k) && i != 0)
                 {
