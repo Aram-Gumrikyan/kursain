@@ -5,27 +5,54 @@
 #include <stdbool.h>
 #include <windows.h>
 
-void generateMatrix(int height, int width, int (*arr)[width]);
-void upwardMovement(int height, int width, int (*arr)[width]);
 int getNumberFromUser(char name[]);
-void copyArray(int width, int *dest, int *root);
-void putArr(int height, int width, int (*arr)[width], int delay);
+void generateMatrix(int height, int width, int (*arr)[width]);
+void upwardAnimation(int height, int width, int (*arr)[width], int rowNumber);
+void upwardAnimationSimpleFactory(int width, int (*arr)[width], int rowNumber, int part);
+void upwardAnimationPart1(int width, int (*arr)[width], int rowNumber);
+void upwardAnimationPart2(int width, int (*arr)[width], int rowNumber);
+void upwardAnimationPart3(int width, int (*arr)[width], int rowNumber);
+void upwardAnimationPart4(int width, int (*arr)[width], int rowNumber);
+void putArr(int height, int width, int (*arr)[width]);
 
 int main()
 {
-    int width = getNumberFromUser("width");
-    int height = getNumberFromUser("height");
+    int width = getNumberFromUser("width") * 2;
+    int height = getNumberFromUser("height") * 2;
 
     int arr[height][width];
 
     generateMatrix(height, width, arr);
-    putArr(height, width, arr, 0);
-    Sleep(3000);
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (!arr[i][j])
+            {
+                printf("   ");
+                continue;
+            }
+
+            printf("%3d", arr[i][j]);
+        }
+
+        printf("%c", '\n');
+    }
+
+    Sleep(1000);
 
     while (true)
     {
-        upwardMovement(height, width, arr);
-        putArr(height, width, arr, 500);
+        for (int i = 0; i < height - 2; i++)
+        {
+            if (i % 2 != 0)
+            {
+                continue;
+            }
+
+            upwardAnimation(height, width, arr, i);
+        }
     }
 
     return 0;
@@ -35,10 +62,10 @@ int getNumberFromUser(char name[])
 {
     int value;
 
-    printf("please enter %s of your array - from 2 to 101 (default-4): ", name);
+    printf("please enter %s of your array - from 2 to 10 (default-4): ", name);
     scanf("%d", &value);
 
-    if (value < 2 || value > 100)
+    if (value < 2 || value > 10)
     {
         value = 4;
     }
@@ -54,41 +81,122 @@ void generateMatrix(int height, int width, int (*arr)[width])
     {
         for (int j = 0; j < width; j++)
         {
-            *(*(arr + i) + j) = rand() % 99;
+            if (i % 2 == 1 || j % 2 == 1)
+            {
+                *(*(arr + i) + j) = 0;
+                continue;
+            }
+
+            *(*(arr + i) + j) = rand() % 98 + 1;
         }
     }
 }
 
-void upwardMovement(int height, int width, int (*arr)[width])
+void upwardAnimation(int height, int width, int (*arr)[width], int rowNumber)
 {
-    int firstRow[width];
-    copyArray(width, firstRow, *(arr + 0));
-
-    for (int i = 1; i < height; i++)
+    for (int i = 1; i < 5; i++)
     {
-        copyArray(width, *(arr + i - 1), *(arr + i));
-    }
-
-    copyArray(width, *(arr + height - 1), firstRow);
-}
-
-void copyArray(int width, int *dest, int *root)
-{
-    for (int i = 0; i < width; i++)
-    {
-        *(dest + i) = *(root + i);
+        upwardAnimationSimpleFactory(width, arr, rowNumber, i);
+        putArr(height, width, arr);
+        for (int k = 1; k < 128; k++)
+        {
+            if (GetAsyncKeyState(k) && i != 1)
+            {
+                ExitProcess(0);
+            }
+        }
+        Sleep(1000);
     }
 }
 
-void putArr(int height, int width, int (*arr)[width], int delay)
+void upwardAnimationSimpleFactory(int width, int (*arr)[width], int rowNumber, int part)
+{
+    switch (part)
+    {
+        case 1: 
+            upwardAnimationPart1(width, arr, rowNumber);
+            break;
+        case 2:
+            upwardAnimationPart2(width, arr, rowNumber);
+            break;
+        case 3:
+            upwardAnimationPart3(width, arr, rowNumber);
+            break;
+        case 4:
+            upwardAnimationPart4(width, arr, rowNumber);
+            break;
+    }
+}
+
+void upwardAnimationPart1(int width, int (*arr)[width], int rowNumber)
+{
+    int bottomIndex = rowNumber + 2;
+
+    for (int j = 0; j < width; j++)
+    {
+        if (j % 2 == 1)
+        {
+            *(*(arr + bottomIndex) + j) = *(*(arr + bottomIndex) + j - 1);
+            *(*(arr + bottomIndex) + j - 1) = 0;
+        }
+    }
+}
+
+void upwardAnimationPart2(int width, int (*arr)[width], int rowNumber)
+{
+    int bottomIndex = rowNumber + 2;
+
+    for (int j = 0; j < width; j++)
+    {
+        if (j % 2 == 1)
+        {
+            *(*(arr + bottomIndex - 1) + j) = *(*(arr + bottomIndex) + j);
+            *(*(arr + bottomIndex) + j) = 0;
+        }
+    }
+}
+
+void upwardAnimationPart3(int width, int (*arr)[width], int rowNumber)
+{
+    int middleIndex = rowNumber + 1;
+
+    for (int j = 0; j < width; j++)
+    {
+        if (j % 2 == 0)
+        {
+            *(*(arr + middleIndex) + j) = *(*(arr + middleIndex - 1) + j);
+            *(*(arr + middleIndex - 1) + j) = 0;
+        } else
+        {
+            *(*(arr + middleIndex - 1) + j) = *(*(arr + middleIndex) + j);
+            *(*(arr + middleIndex) + j) = 0;
+        }
+    }
+}
+
+void upwardAnimationPart4(int width, int (*arr)[width], int rowNumber)
+{
+    for (int j = 0; j < width; j++)
+    {
+        if (j % 2 == 0)
+        {
+            *(*(arr + rowNumber + 2) + j) = *(*(arr + rowNumber + 1) + j);
+            *(*(arr + rowNumber + 1) + j) = 0;
+            *(*(arr + rowNumber) + j) = *(*(arr + rowNumber) + j + 1);
+            *(*(arr + rowNumber) + j + 1) = 0;
+        }
+    }
+}
+
+void putArr(int height, int width, int (*arr)[width])
 {
     COORD pos;
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
 
-    pos.Y = 8;
-    pos.X = 30;
+    pos.Y = height * 2;
+    pos.X = width * 2;
 
     for (int i = 0; i < height; i++)
     {
@@ -96,28 +204,15 @@ void putArr(int height, int width, int (*arr)[width], int delay)
 
         for (int j = 0; j < width; j++)
         {
-            printf("%3d", *(*(arr + i) + j));
-
-            if (!delay)
+            if (!*(*(arr + i) + j))
             {
-                continue;
-            }
-
-            for (int k = 1; k < 128; k++)
+                printf("   ");
+            } else 
             {
-                if (GetAsyncKeyState(k) && i != 0)
-                {
-                    ExitProcess(0);
-                }
+                printf("%3d", *(*(arr + i) + j));
             }
-
-            // Sleep(delay); //animation type 1
         }
 
         pos.Y += 1;
-
-        Sleep(delay); //animation type 2
     }
 }
-
-//
